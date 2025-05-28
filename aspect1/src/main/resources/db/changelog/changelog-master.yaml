@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - include:
+      file: 00-drop-all.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: 01-create-tables.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: 02-inset-tables.yaml
+      relativeToChangelogFile: true

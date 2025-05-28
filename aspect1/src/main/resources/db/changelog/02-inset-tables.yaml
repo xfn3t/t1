@@ -1,0 +1,121 @@
+databaseChangeLog:
+  - changeSet:
+      id: enable_uuid_extension
+      author: xfnet
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+
+  - changeSet:
+      id: insert_clients
+      author: xfnet
+      changes:
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  value: 'Иван'
+              - column:
+                  name: last_name
+                  value: 'Иванов'
+              - column:
+                  name: client_id
+                  valueComputed: uuid_generate_v4()
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  value: 'Петр'
+              - column:
+                  name: middle_name
+                  value: 'Петрович'
+              - column:
+                  name: last_name
+                  value: 'Петров'
+              - column:
+                  name: client_id
+                  valueComputed: uuid_generate_v4()
+
+  - changeSet:
+      id: insert_accounts
+      author: xfnet
+      changes:
+        - insert:
+            tableName: accounts
+            columns:
+              - column:
+                  name: client_id
+                  value: 1
+              - column:
+                  name: type
+                  value: 'DEBIT'
+              - column:
+                  name: balance
+                  value: 1000.00
+        - insert:
+            tableName: accounts
+            columns:
+              - column:
+                  name: client_id
+                  value: 1
+              - column:
+                  name: type
+                  value: 'CREDIT'
+              - column:
+                  name: balance
+                  value: 500.00
+        - insert:
+            tableName: accounts
+            columns:
+              - column:
+                  name: client_id
+                  value: 2
+              - column:
+                  name: type
+                  value: 'DEBIT'
+              - column:
+                  name: balance
+                  value: 2000.00
+
+  - changeSet:
+      id: insert_transactions
+      author: xfnet
+      changes:
+        - insert:
+            tableName: transactions
+            columns:
+              - column:
+                  name: account_id
+                  value: 1
+              - column:
+                  name: amount
+                  value: 100.00
+              - column:
+                  name: timestamp
+                  valueComputed: CURRENT_TIMESTAMP
+        - insert:
+            tableName: transactions
+            columns:
+              - column:
+                  name: account_id
+                  value: 2
+              - column:
+                  name: amount
+                  value: 200.00
+              - column:
+                  name: timestamp
+                  valueComputed: CURRENT_TIMESTAMP
+        - insert:
+            tableName: transactions
+            columns:
+              - column:
+                  name: account_id
+                  value: 3
+              - column:
+                  name: amount
+                  value: 300.00
+              - column:
+                  name: timestamp
+                  valueComputed: CURRENT_TIMESTAMP
