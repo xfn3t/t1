@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_users_data
+      author: liquibase
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "alice"
+              - column:
+                  name: email
+                  value: "alice@example.com"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "bob"
+              - column:
+                  name: email
+                  value: "bob@example.com"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "charlie"
+              - column:
+                  name: email
+                  value: "charlie@example.com"
