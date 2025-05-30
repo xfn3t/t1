@@ -1,7 +1,7 @@
 databaseChangeLog:
   - include:
-      file: create-users-table.yaml
+      file: db/changelog/create/create-users-table.yaml
   - include:
-      file: create-time-limit-exceed-log-table.yaml
+      file: db/changelog/create/create-time-limit-exceed-log-table.yaml
   - include:
-      file: insert-users-data.yaml
+      file: db/changelog/insert/insert-users-data.yaml
