@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.annotation;
+package ru.homework.kafka.annotation;
 
 import java.lang.annotation.*;
 
