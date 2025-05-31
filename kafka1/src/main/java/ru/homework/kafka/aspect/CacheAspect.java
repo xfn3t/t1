@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.aspect;
+package ru.homework.kafka.aspect;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,8 +6,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import ru.t1.homework.cache.model.CacheKey;
-import ru.t1.homework.cache.service.CacheService;
+import ru.homework.kafka.model.CacheKey;
+import ru.homework.kafka.service.CacheService;
 
 @Aspect
 @Component
@@ -17,32 +17,28 @@ public class CacheAspect {
 
     private final CacheService cacheService;
 
-    @Pointcut("@annotation(ru.t1.homework.cache.annotation.Cached)")
+    @Pointcut("@annotation(ru.homework.kafka.annotation.Cached)")
     public void cachedMethods() {}
 
     @Around("cachedMethods()")
     public Object aroundCached(ProceedingJoinPoint pjp) throws Throwable {
 
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        String classPackage = signature.getDeclaringType().getName();
-        String className = classPackage.substring(classPackage.lastIndexOf('.') + 1);
-        String methodName = signature.getName();
+        MethodSignature sig = (MethodSignature) pjp.getSignature();
+        String cls = sig.getDeclaringTypeName();
+        String method = sig.getName();
         Object[] args = pjp.getArgs();
+        CacheKey key = new CacheKey(cls, method, args);
 
-        CacheKey key = new CacheKey(className, methodName, args);
-        Object cachedValue = cacheService.get(key);
-        if (cachedValue != null) {
-            log.debug("[CacheAspect] Cache hit for key: {}. Returning cached value.", key);
-            return cachedValue;
+        Object cached = cacheService.get(key);
+        if (cached != null) {
+            log.debug("Cache HIT {}", key);
+            return cached;
         }
-
-        log.debug("[CacheAspect] Cache miss for key: {}. Proceeding to target method.", key);
+        log.debug("Cache MISS {}", key);
         Object result = pjp.proceed();
         if (result != null) {
             cacheService.put(key, result);
-            log.debug("[CacheAspect] Caching result for key: {}", key);
-        } else {
-            log.debug("[CacheAspect] Target method returned null for key: {}. Nothing cached.", key);
+            log.debug("Cached {}", key);
         }
         return result;
     }
