@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/kafka_example
+    username: kafkaUser
+    password: kafkaPassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      retries: 3
+      max.block.ms: 500
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+metrics:
+  time-limit-ms: 500
+
+cache:
+  default-ttl-seconds: 60
+
+logging:
+  level:
+    ru.t1.homework.cache.aspect.CacheAspect: DEBUG
+    ru.t1.homework.cache.service.CacheService: DEBUG
+    ru.t1.homework.metrics.aspect.MetricAspect: DEBUG
+    ru.t1.homework.datasource.aspect.DataSourceErrorAspect: DEBUG
+    ru.t1.homework.service.ErrorPublisher: DEBUG
+    ru.t1.homework.users.controller: DEBUG
+    ru.t1.homework.users.service: DEBUG
+    org.hibernate.SQL: DEBUG
+
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.yaml
