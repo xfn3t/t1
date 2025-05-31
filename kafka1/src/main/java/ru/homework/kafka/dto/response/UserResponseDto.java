@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.dto.response;
+package ru.homework.kafka.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

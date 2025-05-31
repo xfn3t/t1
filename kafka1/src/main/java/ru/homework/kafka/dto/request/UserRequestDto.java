@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.dto.request;
+package ru.homework.kafka.dto.request;
 
 
 import jakarta.validation.constraints.Email;
