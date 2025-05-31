@@ -1,28 +1,29 @@
-package ru.t1.homework.cache.service;
+package ru.homework.kafka.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.t1.homework.cache.annotation.Cached;
-import ru.t1.homework.cache.annotation.Metric;
-import ru.t1.homework.cache.dto.request.UserRequestDto;
-import ru.t1.homework.cache.dto.response.UserResponseDto;
-import ru.t1.homework.cache.exception.UserNotFoundException;
-import ru.t1.homework.cache.mapper.UserMapper;
-import ru.t1.homework.cache.model.User;
-import ru.t1.homework.cache.repository.UserRepository;
+import ru.homework.kafka.annotation.Cached;
+import ru.homework.kafka.annotation.LogDataSourceError;
+import ru.homework.kafka.annotation.Metric;
+import ru.homework.kafka.dto.request.UserRequestDto;
+import ru.homework.kafka.dto.response.UserResponseDto;
+import ru.homework.kafka.exception.UserNotFoundException;
+import ru.homework.kafka.mapper.UserMapper;
+import ru.homework.kafka.model.User;
+import ru.homework.kafka.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @LogDataSourceError
     public List<UserResponseDto> getAll() {
         return userRepository.findAll()
                 .stream()
@@ -31,6 +32,7 @@ public class UserService {
     }
 
     @Cached
+    @LogDataSourceError
     public UserResponseDto getById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id=" + id + " not found"));
@@ -38,6 +40,7 @@ public class UserService {
     }
 
     @Transactional
+    @LogDataSourceError
     public UserResponseDto create(UserRequestDto dto) {
         User entity = userMapper.toEntity(dto);
         User saved = userRepository.save(entity);
@@ -45,6 +48,7 @@ public class UserService {
     }
 
     @Transactional
+    @LogDataSourceError
     public UserResponseDto update(Long id, UserRequestDto dto) {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id=" + id + " not found"));
@@ -54,6 +58,7 @@ public class UserService {
     }
 
     @Transactional
+    @LogDataSourceError
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException("User with id=" + id + " not found");

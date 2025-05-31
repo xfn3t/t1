@@ -1,11 +1,11 @@
-package ru.t1.homework.cache.service;
+package ru.homework.kafka.service;
 
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
-import ru.t1.homework.cache.model.CacheKey;
-import ru.t1.homework.cache.model.CacheEntry;
+import ru.homework.kafka.model.CacheEntry;
+import ru.homework.kafka.model.CacheKey;
 
 import java.util.concurrent.*;
 
