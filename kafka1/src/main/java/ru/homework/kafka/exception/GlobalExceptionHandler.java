@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.exception;
+package ru.homework.kafka.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
