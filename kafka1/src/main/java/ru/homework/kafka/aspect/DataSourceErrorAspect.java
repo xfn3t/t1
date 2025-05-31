@@ -16,7 +16,7 @@ public class DataSourceErrorAspect {
 
     private final ErrorPublisher errorPublisher;
 
-    @Pointcut("@annotation(ru.t1.homework.datasource.annotation.LogDatasourceError)")
+    @Pointcut("@annotation(ru.homework.kafka.annotation.LogDataSourceError)")
     public void datasourceAnnotatedMethods() {}
 
     @Around("datasourceAnnotatedMethods()")

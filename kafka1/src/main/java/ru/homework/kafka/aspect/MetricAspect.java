@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.aspect;
+package ru.homework.kafka.aspect;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,55 +7,38 @@ import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.t1.homework.cache.model.TimeLimitExceedLog;
-import ru.t1.homework.cache.repository.TimeLimitExceedLogRepository;
+import ru.homework.kafka.service.ErrorPublisher;
 
-import java.time.LocalDateTime;
-
-@Slf4j
 @Aspect
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class MetricAspect {
 
-    private final TimeLimitExceedLogRepository logRepository;
+    private final ErrorPublisher errorPublisher;
 
     @Value("${metrics.time-limit-ms}")
     private long timeLimitMs;
 
-    @Pointcut("@annotation(ru.t1.homework.cache.annotation.Metric)")
+    @Pointcut("@annotation(ru.homework.kafka.annotation.Metric)")
     public void metricAnnotatedMethods() {}
 
     @Around("metricAnnotatedMethods()")
     public Object aroundMetric(ProceedingJoinPoint pjp) throws Throwable {
 
-        String signature = pjp.getSignature().toShortString();
-        log.debug("[MetricAspect] Intercepted method: {}. Threshold = {} ms", signature, timeLimitMs);
+        MethodSignature msig = (MethodSignature) pjp.getSignature();
+        String className = msig.getDeclaringType().getSimpleName();
+        String methodName = msig.getName();
 
         long start = System.currentTimeMillis();
         Object result = pjp.proceed();
         long duration = System.currentTimeMillis() - start;
 
-        log.debug("[MetricAspect] Method {} executed in {} ms", signature, duration);
-
         if (duration > timeLimitMs) {
-            log.info("[MetricAspect] Duration {} ms > threshold {} ms. Saving to DB...", duration, timeLimitMs);
-
-            MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
-            String className = methodSignature.getDeclaringType().getSimpleName();
-            String methodName = methodSignature.getName();
-
-            TimeLimitExceedLog logEntry = new TimeLimitExceedLog(
-                    className,
-                    methodName,
-                    duration,
-                    LocalDateTime.now()
-            );
-            logRepository.save(logEntry);
-            log.info("[MetricAspect] Saved record to time_limit_exceed_log: {}.{} took {} ms",
-                    className, methodName, duration);
+            log.debug("Метод {}.{} выполнился {}ms (> {}ms)", className, methodName, duration, timeLimitMs);
+            errorPublisher.publishMetricError(className, methodName, duration);
         } else {
-            log.debug("[MetricAspect] Duration {} ms <= threshold {} ms. Skipping save.", duration, timeLimitMs);
+            log.debug("Метод {}.{} выполнился {}ms (<= {}ms)", className, methodName, duration, timeLimitMs);
         }
         return result;
     }
