@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.exception;
+package ru.homework.kafka.exception;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String msg) {
