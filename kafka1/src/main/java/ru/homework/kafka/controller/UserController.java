@@ -1,12 +1,13 @@
-package ru.t1.homework.cache.controller;
+package ru.homework.kafka.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.t1.homework.cache.dto.request.UserRequestDto;
-import ru.t1.homework.cache.dto.response.UserResponseDto;
-import ru.t1.homework.cache.service.UserService;
+
+import ru.homework.kafka.dto.request.UserRequestDto;
+import ru.homework.kafka.dto.response.UserResponseDto;
+import ru.homework.kafka.service.UserService;
 
 import java.util.List;
 
