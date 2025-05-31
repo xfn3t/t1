@@ -9,12 +9,13 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "time_limit_exceed_log")
+@Table(name = "data_source_error_log")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TimeLimitExceedLog {
+public class DataSourceErrorLog {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,19 +26,15 @@ public class TimeLimitExceedLog {
     @Column(name = "method_name", nullable = false)
     private String methodName;
 
-    @Column(name = "execution_time_ms", nullable = false)
-    private Long executionTimeMs;
-
-    @Column(name = "error_message", length = 1024)
+    @Column(name = "error_message", nullable = false, length = 1024)
     private String errorMessage;
 
     @Column(name = "logged_at", nullable = false)
     private LocalDateTime loggedAt;
 
-    public TimeLimitExceedLog(String className, String methodName, Long executionTimeMs, String errorMessage, LocalDateTime loggedAt) {
+    public DataSourceErrorLog(String className, String methodName, String errorMessage, LocalDateTime loggedAt) {
         this.className = className;
         this.methodName = methodName;
-        this.executionTimeMs = executionTimeMs;
         this.errorMessage = errorMessage;
         this.loggedAt = loggedAt;
     }

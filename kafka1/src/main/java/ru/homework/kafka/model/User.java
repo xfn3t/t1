@@ -1,4 +1,4 @@
-package ru.t1.homework.cache.model;
+package ru.homework.kafka.model;
 
 
 import jakarta.persistence.*;
