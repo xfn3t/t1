@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/kafka_example?connectTimeout=30000
+    username: kafkaUser
+    password: kafkaPassword
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      initialization-fail-timeout: 0
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+metrics:
+  time-limit-ms: 500
+
+transaction:
+  limit:
+    count: 5
+    period: 60
+
+cache:
+  default-ttl-seconds: 60
