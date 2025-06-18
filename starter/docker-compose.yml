@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: demo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/demo
+      SPRING_DATASOURCE_USERNAME: demo
+      SPRING_DATASOURCE_PASSWORD: demo
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_LIQUIBASE_ENABLED: "true"
+      SPRING_LIQUIBASE_CHANGELOG: classpath:db/changelog/master.yaml
+
+      CACHE_METRICS_LOG_DEFAULT_TTL_SECONDS: "60"
+      CACHE_METRICS_LOG_TIME_LIMIT_MS: "200"
+      CACHE_METRICS_LOG_KAFKA_ENABLED: "false"
+      CACHE_METRICS_LOG_KAFKA_BOOTSTRAP_SERVERS: "localhost:9092"
+      CACHE_METRICS_LOG_KAFKA_TOPIC: "cache-metrics"
+
+
+volumes:
+  pgdata:
