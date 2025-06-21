@@ -1,0 +1,13 @@
+server:
+  port: 8081
+
+security:
+  jwt:
+    secret: my-super-secret-key-that-nobody-else-knows-123456
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: ${security.jwt.secret}
