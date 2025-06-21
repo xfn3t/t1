@@ -1,0 +1,60 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/microservice_example
+    username: microservUser
+    password: microservPassword
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  micrometer:
+    metrics:
+      export:
+        prometheus:
+          enabled: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
+
+  cloud:
+    openfeign:
+      oauth2:
+        enabled: false
+
+security:
+  jwt:
+    secret: my-super-secret-key-that-nobody-else-knows-123456
+    expiration-ms: 3600000
+
+service2:
+  url: http://service2:8081
+
+service3:
+  url: http://service3:8082
+
+tasks:
+  unblock:
+    clients:
+      period: 50000
+      count: 5
+    accounts:
+      period: 50000
+      count: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+transactions:
+  reject:
+    threshold: 5
