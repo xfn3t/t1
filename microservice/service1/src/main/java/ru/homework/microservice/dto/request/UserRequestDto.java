@@ -9,10 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserRequestDto {
-    @NotBlank(message = "Username не пустой")
+    @NotBlank(message = "Username не может быть пустым")
     private String username;
 
-    @NotBlank(message = "Email не пустой")
-    @Email(message = "Email невалидный")
+    @NotBlank(message = "Email не может быть пустым")
+    @Email(message = "Email должен быть корректным")
     private String email;
 }
