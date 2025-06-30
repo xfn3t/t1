@@ -1,0 +1,13 @@
+spring:
+  kafka:
+    bootstrap-servers: kafka:9092
+
+transaction:
+  limit:
+    count: 5
+    period: 60
+
+logging:
+  level:
+    ru.homework.service2.listener.TransactionAcceptListener: DEBUG
+    ru.homework.service2.service.TransactionProcessor: DEBUG
