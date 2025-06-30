@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/demo
+    driver-class-name: org.postgresql.Driver
+    username: demo
+    password: demo
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+cache-metrics-log:
+  default-ttl-seconds: 60
+  time-limit-ms: 200
+  kafka-enabled: false
+  kafka-bootstrap-servers: localhost:9092
+  kafka-topic: cache-metrics
