@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: kafka_example
+      POSTGRES_USER: kafkaUser
+      POSTGRES_PASSWORD: kafkaPassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kafkaUser -d kafka_example"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    platform: linux/amd64
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: 'yes'
+      ZOO_4LW_COMMANDS_WHITELIST: '*'
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD", "zkServer.sh", "status"]
+      interval: 10s
+      timeout: 20s
+      retries: 15
+      start_period: 30s
+
+  kafka:
+    image: bitnami/kafka:3.5
+    platform: linux/amd64
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+    ports:
+      - "19092:9092"
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server localhost:9092"]
+      interval: 15s
+      timeout: 20s
+      retries: 10
+      start_period: 45s
+
+  service1:
+    build:
+      context: ./service1
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/kafka_example?connectTimeout=30000
+      SPRING_DATASOURCE_USERNAME: kafkaUser
+      SPRING_DATASOURCE_PASSWORD: kafkaPassword
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_JPA_PROPERTIES_HIBERNATE_HBM2DDL_AUTO: validate
+      SPRING_LIQUIBASE_ENABLED: "true"
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-net
+
+  service2:
+    build:
+      context: ./service2
+      dockerfile: Dockerfile
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      TRANSACTION_LIMIT_COUNT: "5"
+      TRANSACTION_LIMIT_PERIOD: "60"
+    ports:
+      - "8081:8081"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-net
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+networks:
+  kafka-net:
+    driver: bridge
