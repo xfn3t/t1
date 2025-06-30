@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-all-tables
+      author: xfnet
+      changes:
+        - dropTable:
+            tableName: transactions
+            cascadeConstraints: true
+
+        - dropTable:
+            tableName: accounts
+            cascadeConstraints: true
+
+        - dropTable:
+            tableName: datasource_error_log
+            cascadeConstraints: true
+
+        - dropTable:
+            tableName: clients
+            cascadeConstraints: true
+
+        - sql:
+            sql: DROP EXTENSION IF EXISTS "uuid-ossp"
