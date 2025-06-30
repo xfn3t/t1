@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: microservice_example
+      POSTGRES_USER: microservUser
+      POSTGRES_PASSWORD: microservPassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - microservice-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U microservUser -d microservice_example" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  service1:
+    build:
+      context: ./service1
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/microservice_example?connectTimeout=30000
+      SPRING_DATASOURCE_USERNAME: microservUser
+      SPRING_DATASOURCE_PASSWORD: microservPassword
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservice-net
+
+  service2:
+    build:
+      context: ./service2
+      dockerfile: Dockerfile
+    environment:
+      TRANSACTION_LIMIT_COUNT: "5"
+      TRANSACTION_LIMIT_PERIOD: "60"
+    ports:
+      - "8081:8081"
+    networks:
+      - microservice-net
+    restart: unless-stopped
+
+  service3:
+    build:
+      context: ./service3
+      dockerfile: Dockerfile
+    environment:
+      TRANSACTION_LIMIT_COUNT: "5"
+      TRANSACTION_LIMIT_PERIOD: "60"
+    ports:
+      - "8082:8082"
+    networks:
+      - microservice-net
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+networks:
+  microservice-net:
+    driver: bridge
