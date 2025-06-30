@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: metricsapp-db
+    environment:
+      POSTGRES_DB: metricsdb
+      POSTGRES_USER: metricsuser
+      POSTGRES_PASSWORD: metricspassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: metricsapp-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/metricsdb
+      SPRING_DATASOURCE_USERNAME: metricsuser
+      SPRING_DATASOURCE_PASSWORD: metricspassword
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+
+      METRICS_TIME_LIMIT_MS: 500
+
+      CACHE_DEFAULT_TTL_SECONDS: 60
+
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:

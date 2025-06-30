@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_time_limit_exceed_log_table
+      author: liquibase
+      changes:
+        - createTable:
+            tableName: time_limit_exceed_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: class_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: method_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_time_ms
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: exceeded_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false

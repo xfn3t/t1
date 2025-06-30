@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/metricsdb
+    username: metricsuser
+    password: metricspassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+metrics:
+  time-limit-ms: 500
+
+cache:
+  default-ttl-seconds: 120
+
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.yaml
+
+logging:
+  level:
+    ru.t1.homework.cache.aspect.CacheAspect: DEBUG
+    ru.t1.homework.users.service.UserService: DEBUG
